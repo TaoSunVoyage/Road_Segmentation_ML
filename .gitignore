@@ -105,3 +105,4 @@ venv.bak/
 
 # Mac environment files
 .DS_Store
+*.png

@@ -55,7 +55,7 @@ callbacks = [
 # Training
 history = model.fit_generator(generator=trainGen, steps_per_epoch=1000,
                               validation_data=valGen, validation_steps=80,
-                              epochs=100, callbacks=callbacks)
+                              epochs=50, callbacks=callbacks)
 
 
 print("Predict and save results...")

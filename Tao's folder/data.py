@@ -34,24 +34,24 @@ def build_train_val(train_path, val_path, val_size=0.2, seed=1):
         ma = Image.open(os.path.join(train_path, 'groundtruth', 'satImage_%.3d.png'%i))
 
         im_f = im.transpose(Image.FLIP_LEFT_RIGHT)
-        io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_f.png'%i), im_f)
+        io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_f.png'%i), np.array(im_f))
 
         ma_f = ma.transpose(Image.FLIP_LEFT_RIGHT)
-        io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_f.png'%i), ma_f)
+        io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_f.png'%i), np.array(ma_f))
     
     
         for angle in [90, 180, 270]:
             im_r = im.rotate(angle)
-            io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_%.3d.png'%(i, angle)), im_r)
+            io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_%.3d.png'%(i, angle)), np.array(im_r))
 
             im_f_r = im_f.rotate(angle)
-            io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_f_%.3d.png'%(i, angle)), im_f_r)
+            io.imsave(os.path.join(train_path, 'images', 'satImage_%.3d_f_%.3d.png'%(i, angle)), np.array(im_f_r))
 
             ma_r = ma.rotate(angle)
-            io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_%.3d.png'%(i, angle)), ma_r)
+            io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_%.3d.png'%(i, angle)), np.array(ma_r))
 
             ma_f_r = ma_f.rotate(angle)
-            io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_f_%.3d.png'%(i, angle)), ma_f_r)
+            io.imsave(os.path.join(train_path, 'groundtruth', 'satImage_%.3d_f_%.3d.png'%(i, angle)), np.array(ma_f_r))
 
     # Get all images's name
     train_val_images = os.listdir(os.path.join(train_path, 'images'))

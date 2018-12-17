@@ -4,6 +4,7 @@ import numpy as np
 np.random.seed(1)
 import random
 random.seed(1)
+import os
 
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, EarlyStopping, TensorBoard
 
@@ -13,15 +14,17 @@ from losses import dice_loss
 from mask_to_submission import make_submission
 
 # paths
-train_path = "data/training"
-val_path = "data/validation"
-test_path = "data/test_set_images"
+train_path = os.path.join("data", "training")
+val_path = os.path.join("data", "validation")
+test_path = os.path.join("data", "test_set_images")
 
 predict_path = "predict_images"
 
-
-print("Build training and validation data set...")
-build_train_val(train_path, val_path, val_size=0.2)
+if not os.path.exists(val_path):
+    print("Build training and validation data set...")
+    build_train_val(train_path, val_path, val_size=0.2)
+else:
+    print("Have found training and validation data set...")
 
 
 print("Create generator for training and validation...")

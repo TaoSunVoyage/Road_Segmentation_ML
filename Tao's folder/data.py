@@ -196,4 +196,4 @@ def save_result(save_path, npyfile):
     make_dir(save_path)
     for i, item in enumerate(npyfile):
         img = item[:,:,0]
-        io.imsave(os.path.join(save_path, "%d_predict.png"%(i+1)), img)
+        io.imsave(os.path.join(save_path, '%.3d.png'%(i+1)), img)

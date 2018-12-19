@@ -1,1 +1,1 @@
-This is the folder for storing weights.
+This is the folder for weights.

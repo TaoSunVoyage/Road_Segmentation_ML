@@ -1,6 +1,7 @@
 numpy
-Keras
+keras
 tensorflow
+h5py
 scikit_learn
 matplotlib
 scikit_image

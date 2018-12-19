@@ -53,3 +53,7 @@ Script to retrain models and get the prediction results as we submitted in crowd
 ### ```run.py```
 
 Script to generate the same submission file as we submitted in crowdAI with pretrained models.
+
+## License
+
+The project is licensed under the MIT License.

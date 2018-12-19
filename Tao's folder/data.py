@@ -4,6 +4,9 @@ import numpy as np
 np.random.seed(1)
 import random
 random.seed(1)
+import tensorflow as tf
+tf.set_random_seed(1)
+
 import os
 import skimage.io as io
 from PIL import Image

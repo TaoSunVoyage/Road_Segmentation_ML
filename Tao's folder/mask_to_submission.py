@@ -35,10 +35,10 @@ def masks_to_submission(submission_filename, *image_filenames):
             f.writelines('{}\n'.format(s) for s in mask_to_submission_strings(fn))
 
 
-def make_submission(predict_path, submission_filename="submission.csv"):
+def make_submission(predict_path, test_size=50, submission_filename="submission.csv"):
     """Make submission file."""
     image_filenames = []
-    for i in range(1, 51):
+    for i in range(1, test_size+1):
         image_filename = os.path.join(predict_path, '%.3d' % i + '.png')
         image_filenames.append(image_filename)
     masks_to_submission(submission_filename, *image_filenames)

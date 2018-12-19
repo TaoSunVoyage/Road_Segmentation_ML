@@ -5,70 +5,49 @@ np.random.seed(1)
 import random
 random.seed(1)
 import os
+import tensorflow as tf
+tf.set_random_seed(1)
 
-from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, EarlyStopping, TensorBoard
+from keras.models import load_model
 
-from data import build_train_val, trainvalGenerator, testGenerator, save_result
-from model import unet
+from data import testGenerator, save_result
 from losses import dice_loss
+from metrics import f1
 from mask_to_submission import make_submission
 
-# paths
-train_path = os.path.join("data", "training")
-val_path = os.path.join("data", "validation")
+
+TEST_SIZE = 50
 test_path = os.path.join("data", "test_set_images")
+if not os.path.exists(test_path):
+    raise FileNotFoundError("Please download test images!")
 
 predict_path = "predict_images"
+if not os.path.exists(predict_path):
+    os.makedirs(predict_path)
 
-if not os.path.exists(val_path):
-    print("Build training and validation data set...")
-    build_train_val(train_path, val_path, val_size=0.2)
-else:
-    print("Have found training and validation data set...")
+weight_path = "weights"
+weight_list = ["weights_32.h5", "weights_64.h5", "weights_dilated.h5" ]
 
+print("Check weights...")
+if not os.path.exists(weight_path):
+    raise FileNotFoundError("Please download weights!")
+missing_weight = list(set(weight_list) - set(os.listdir(weight_path)))
+if len(missing_weight):
+    raise FileNotFoundError("Can not find: " + str(missing_weight))
 
-print("Create generator for training and validation...")
-# Arguments for data augmentation
-data_gen_args = dict(rotation_range=45,
-                     width_shift_range=0.1,
-                     height_shift_range=0.1,
-                     horizontal_flip=True,
-                     vertical_flip=True,
-                     fill_mode='reflect')
-
-# Build generator for training and validation set
-trainGen, valGen = trainvalGenerator(batch_size=2, aug_dict=data_gen_args, 
-                                     train_path=train_path, val_path=val_path,
-                                     image_folder='images', mask_folder='groundtruth',
-                                     train_dir = None, # Set it to None if you don't want to save
-                                     val_dir = None, # Set it to None if you don't want to save
-                                     target_size = (400, 400), seed = 1)
-
-
-print("Build model and training...")
-# Build model
-model = unet(n_filter=32, activation='elu', dropout_rate=0.2, loss=dice_loss)
-# Callback functions
-callbacks = [
-    EarlyStopping(monitor='val_loss', patience=9, verbose=1, min_delta=1e-4),
-    ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1, min_delta=1e-4),
-    ModelCheckpoint('weights.h5', monitor='val_loss', save_best_only=True, verbose=1),
-    TensorBoard(log_dir='tensorboard/', write_graph=True, write_images=True)
-]
-# Training
-history = model.fit_generator(generator=trainGen, steps_per_epoch=1000,
-                              validation_data=valGen, validation_steps=80,
-                              epochs=50, callbacks=callbacks)
-
-
-print("Predict and save results...")
-testGene = testGenerator(test_path)
-result = model.predict_generator(testGene, 50, verbose=1)
+print("Load models and predict...")
+result_list = []
+for w in weight_list:
+    print("Load " + w)
+    model = load_model(os.path.join(weight_path, w), custom_objects={"dice_loss": dice_loss, "f1": f1})
+    print("Predict ...")
+    testGene = testGenerator(test_path)
+    result = model.predict_generator(testGene, TEST_SIZE, verbose=1)
+    result_list.append(result)
+results = np.mean(result_list)
 save_result(predict_path, result)
 
-
 print("Make submission...")
-make_submission(predict_path, submission_filename="submission.csv")
-
+make_submission(predict_path, test_size=TEST_SIZE, submission_filename="submission.csv")
 
 print("Done!")

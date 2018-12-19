@@ -1,2 +1,1 @@
-# Road_Segmentation_ML
-Road Extraction from Satellite Images - EPFL Machine Learning Project2
+This is the folder for training, validation and test set data.

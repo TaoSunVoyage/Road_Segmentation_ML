@@ -32,16 +32,15 @@ if len(missing_weight):
     raise FileNotFoundError("Can not find: " + str(missing_weight))
 
 print("Load models and predict...")
-result_list = []
+results = 0
 for w in weight_list:
     print("...Load " + w + "...")
     model = load_model(os.path.join(weight_path, w), custom_objects={"dice_loss": dice_loss, "f1": f1})
     print("...Predict...")
     testGene = testGenerator(test_path)
-    result = model.predict_generator(testGene, TEST_SIZE, verbose=1)
-    result_list.append(result)
-results = np.mean(result_list)
-save_result(predict_path, result)
+    results += model.predict_generator(testGene, TEST_SIZE, verbose=1)
+results /= len(weight_list)
+save_result(predict_path, results)
 
 print("Make submission...")
 make_submission(predict_path, test_size=TEST_SIZE, submission_filename=os.path.join(submission_path, "submission.csv"))
